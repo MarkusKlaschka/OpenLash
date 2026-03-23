@@ -74,6 +74,22 @@ sub get_prompt_text {
 	return "=== Langzeitgedächtnis ===\n" . join("\n", map { "[$_->{timestamp}] $_->{value}" } @$rows);
 }
 
+sub export {
+    my ($self, $file) = @_;
+    my $rows = $self->{dbh}->selectall_arrayref("SELECT * FROM memory ORDER BY timestamp", {Slice => {}});
+    path($file)->spew(encode_json($rows));
+    return scalar @$rows;
+}
+
+sub import {
+    my ($self, $file) = @_;
+    return unless -e $file;
+    my $data = decode_json(path($file)->slurp);
+    $self->store_batch($_) for @$data;
+    return scalar @$data;
+}
+
 sub clear { $_[0]->{dbh}->do("DELETE FROM memory") }
+
 
 1;
