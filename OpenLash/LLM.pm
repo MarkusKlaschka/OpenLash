@@ -79,12 +79,22 @@ sub call {
         ? {model => $name, max_tokens => $model->{max_tokens_out}, system => $system, messages => $messages}
         : {model => $name, messages => [{role => "system", content => $system}, @$messages], stream => "false", temperature => 0};
 
-    # Basic rate limit: Sleep 1s between calls (expand as needed)
-    sleep 1;
+    # Rate limit: Adaptive sleep based on provider (e.g., 1s for xai, 0.5s others)
+    my $rate_sleep = $prov->{name} eq 'xai' ? 1 : 0.5;
+    sleep $rate_sleep;
 
     my $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
     return decode_json($res->{content}) if $res->{success};
     die "LLM error: $res->{content}";
+}
+
+1;
+al backoff stub
+            $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
+        }
+        return decode_json($res->{content}) if $res->{success};
+    }
+    die "LLM error: $res->{content} (status: $res->{status})";
 }
 
 1;

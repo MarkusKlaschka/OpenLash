@@ -34,9 +34,16 @@ sub run_plugin_tool {
     
     if ($name eq 'weather') {
         my $location = $args->{location} || 'auto';
+        # Simple cache: Check file <1min old
+        my $cache_file = path("cache/weather_$location.json");
+        if ($cache_file->exists && time() - $cache_file->stat->mtime < 60) {
+            return $cache_file->slurp;
+        }
         my $http = HTTP::Tiny->new;
         my $res = $http->get("https://wttr.in/$location?format=3");
-        return $res->{success} ? $res->{content} : "Weather fetch failed";
+        my $result = $res->{success} ? $res->{content} : "Weather fetch failed";
+        $cache_file->spew($result);  # Cache for next call
+        return $result;
     }
     
     # Add more plugins here

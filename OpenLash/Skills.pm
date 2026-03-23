@@ -49,9 +49,16 @@ sub run_skill {
     
     if ($name eq 'shell') {
         my $cmd = $args->{cmd} or return "Shell skill requires 'cmd' param";
-        # Basic safety: No sudo, limit output
-        my $output = `$cmd 2>&1`;
-        return length($output) > 1024 ? substr($output, 0, 1024) . "\n[Truncated]" : $output;
+        # Basic safety: No sudo, timeout 10s, limit output
+        eval {
+            local $SIG{ALRM} = sub { die "Timeout" };
+            alarm 10;
+            my $output = `$cmd 2>&1`;
+            alarm 0;
+            return length($output) > 1024 ? substr($output, 0, 1024) . "\n[Truncated]" : $output;
+        };
+        alarm 0;
+        return $@ =~ /Timeout/ ? "Shell command timed out" : "Shell error: $@";
     }
     
     # Add more skills here
