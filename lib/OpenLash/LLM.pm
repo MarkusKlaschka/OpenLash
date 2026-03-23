@@ -49,8 +49,29 @@ sub call {
 # Fallback for OpenAI-compatible (vLLM)
 sub call_openai_compat {
     my ($self, $prompt, $system_prompt, $max_tokens) = @_;
-    # Implement POST to /v1/chat/completions if needed
-    # ...
+    my $endpoint = $self->{endpoint} || 'http://localhost:8000/v1/chat/completions';
+    $max_tokens ||= 1024;
+    $system_prompt ||= 'You are a precise memory compressor. Extract structured facts without hallucination.';
+
+    my $req = POST $endpoint,
+        Content_Type => 'application/json',
+        Content => encode_json({
+            model => $self->{model},
+            messages => [
+                { role => 'system', content => $system_prompt },
+                { role => 'user', content => $prompt },
+            ],
+            stream => false,
+            max_tokens => $max_tokens,
+            temperature => 0.3,
+        });
+
+    my $res = $self->{ua}->request($req);
+    die "LLM call failed: " . $res->status_line unless $res->is_success;
+
+    my $data = decode_json($res->content);
+    return $data->{choices}[0]{message}{content} || '';
 }
 
 1;
+__END__
