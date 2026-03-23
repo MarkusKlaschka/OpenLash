@@ -105,8 +105,8 @@ sub start_listening {
         my $ch = $self->{channels}{$name};
         next unless $ch->{type} eq 'telegram';
         
+        $self->_log_msg("Starting Telegram listener for $name...");
         # Use threads for non-blocking if multiple channels; for simplicity, sequential poll
-        print "Starting Telegram listener for $name...\n";
         while (1) {
             eval {
                 my $updates = $ch->{bot}->getUpdates({
@@ -124,9 +124,34 @@ sub start_listening {
                     my $from_id = $msg->{from}->{id};
                     
                     # Filter: listen_from 'all' or match user ID
-                    next unless $ch->{listen_from} eq 'all' || grep { $_ eq $from_id } @{$ch->{listen_from}};
+                    next unless $ch->{listen_from} eq 'all' || (ref $ch->{listen_from} eq 'ARRAY' && grep { $_ eq $from_id } @{$ch->{listen_from}});
                     
                     # Decode and handle (e.g., non-text messages stubbed)
+                    if ($text) {
+                        $self->_log_msg("Received from Telegram ($name, chat $chat_id, from $from_id): $text");
+                        $_->($name, $text, { chat_id => $chat_id, from_id => $from_id }) 
+                            for @{$self->{handlers}};
+                    } else {
+                        my $reply = "Unsupported message type received.";
+                        $self->send($name, $reply, { chat_id => $chat_id });
+                        $self->_log_msg("Handled non-text message in $name (chat $chat_id): $reply");
+                    }
+                }
+            }; if ($@) { 
+                $self->_log_err("Telegram poll error for $name: $@"); 
+                warn "Telegram poll error for $name: $@" 
+            }
+            
+            sleep $poll_interval;
+        }
+    }
+    
+    # For CLI/IRC: These are event-driven externally; no poll needed here
+    $self->_log_msg("Listening started for non-Telegram channels (CLI/IRC).");
+}
+
+1;
+ handle (e.g., non-text messages stubbed)
                     if ($text) {
                         print "Received from Telegram ($name, chat $chat_id): $text\n";
                         $_->($name, $text, { chat_id => $chat_id, from_id => $from_id }) 
