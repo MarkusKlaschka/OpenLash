@@ -45,31 +45,30 @@ sub save_config { my ($self, $file) = @_; path($file)->spew(encode_json({provide
 
 # Aufruf (verwendet Provider + Model-Metadaten)
 sub call {
-	my ($self, $system, $messages, $model_name) = @_;
-	my $name = $model_name || $self->{default_model};
-	my $model = $self->{models}{$name} or die "Modell '$name' nicht gefunden!";
-	my $prov  = $self->{providers}{$model->{provider}} or die "Provider fehlt!";
+    my ($self, $system, $messages, $model_name) = @_;
+    my $name = $model_name || $self->{default_model};
+    my $model = $self->{models}{$name} or die "Model '$name' not found!";
+    my $prov = $self->{providers}{$model->{provider}} or die "Provider missing!";
 
-	my $http = HTTP::Tiny->new;
-	my $headers = $prov->{type} eq "anthropic"
-		? {"x-api-key" => $ENV{$prov->{key_env}}, "anthropic-version" => "2023-06-01"}
-		: {"Authorization" => "Bearer " . $ENV{$prov->{key_env}}};
-	$headers->{"Content-Type"} = "application/json";
+    # Security: Ensure env var is set
+    my $key = $ENV{$prov->{key_env}};
+    die "API key missing: Set $prov->{key_env}" unless $key;
 
-	my $body = $prov->{type} eq "anthropic"
-		? {model => $name, max_tokens => $model->{max_tokens_out}, system => $system, messages => $messages}
-		: {model => $name, messages => [{role=>"system", content=>$system}, @$messages],stream=>"false",temperature=>0};
+    my $http = HTTP::Tiny->new;
+    my $headers = $prov->{type} eq "anthropic"
+        ? {"x-api-key" => $key, "anthropic-version" => "2023-06-01", "Content-Type" => "application/json"}
+        : {"Authorization" => "Bearer $key", "Content-Type" => "application/json"};
 
-	my $body_encoded = encode_json($body);
-	$body_encoded =~ s/"false"/false/g;
+    my $body = $prov->{type} eq "anthropic"
+        ? {model => $name, max_tokens => $model->{max_tokens_out}, system => $system, messages => $messages}
+        : {model => $name, messages => [{role => "system", content => $system}, @$messages], stream => "false", temperature => 0};
 
-	print "BE:$body_encoded\n";
-	#print "H:".Dumper(\$headers)."\n";
-	#print "B:".Dumper(\$body)."\n";
-	my $res = $http->post($prov->{base_url}, {headers => $headers, content => $body_encoded});
-	print Dumper(\$res);
-	return decode_json($res->{content}) if $res->{success};
-	die "LLM-Fehler: $res->{content}";
+    # Basic rate limit: Sleep 1s between calls (expand as needed)
+    sleep 1;
+
+    my $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
+    return decode_json($res->{content}) if $res->{success};
+    die "LLM error: $res->{content}";
 }
 
 1;

@@ -8,21 +8,25 @@ use OpenLash::Comm;
 use Data::Dumper;
 
 sub new {
-	my ($class, %args) = @_;
-	my $self = bless {
-		ws	  => path($args{workspace} || "$ENV{HOME}/.OpenLash"),
-		skills  => $args{skills}  || [qw(shell file reflect)],
-		max_hist=> $args{max_history} || 25,
-		llm	 => $args{llm}	 || OpenLash::LLM->new(),
-		comm	=> $args{comm}	|| OpenLash::Comm->new(),
-		default_channel => $args{default_channel} || 'cli',
-	}, $class;
+    my ($class, %args) = @_;
+    my $self = bless {
+        ws => path($args{workspace} || "$ENV{HOME}/.OpenLash"),
+        skills => $args{skills_obj} || OpenLash::Skills->new(ws => $args{workspace}),
+        plugins => $args{plugins_obj} || OpenLash::Plugins->new(),
+        max_hist => $args{max_history} || 25,
+        llm => $args{llm} || OpenLash::LLM->new(),
+        comm => $args{comm} || OpenLash::Comm->new(),
+        default_channel => $args{default_channel} || 'cli',
+    }, $class;
 
-	$self->{ws}->mkpath;
-	$self->{ws}->child("skills")->mkpath;
-	$self->_init_db;
+    $self->{ws}->mkpath;
+    $self->{ws}->child("skills")->mkpath;
+    $self->_init_db;
 
-	return $self;
+    # Register plugins with agent
+    $self->{plugins}->register_all($self);
+
+    return $self;
 }
 
 sub _init_db {
@@ -102,6 +106,18 @@ sub ask {
 
 		return $answer;
 	}
+}
+
+# Hilfsmethoden
+sub clear_history { $_[0]->{dbh}->do("DELETE FROM history") }
+sub list_skills   { join ", ", @{$_[0]->{skills}} }
+
+1;
+cs", "Query cost: approx. " . ($model_name ? "TBD" : "low"));
+        }
+
+        return $answer;
+    }
 }
 
 # Hilfsmethoden

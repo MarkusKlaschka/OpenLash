@@ -71,6 +71,14 @@ foreach my $c (@{$connections}) {
 print "COMMS:\n";
 print Dumper(\$comms);  # Remove die for production
 
-my $agent = OpenLash->new(ws=>'/tmp/Alfred', comm=>$comms);
+my $agent = OpenLash->new(
+    ws => '/tmp/OpenLash',
+    comm => $comm,
+    default_channel => 'OpenLashTeam'
+);
+
+my $server = OpenLash::Server->new(agent => $agent);
+$server->start;
+mms);
 my $server = OpenLash::Server->new(agent => $agent);
 $server->start;

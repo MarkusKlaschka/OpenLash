@@ -23,13 +23,13 @@ my $tasks   = OpenLash::Tasks->new();
 $comm->add_channel('cli', 'cli');
 
 my $agent = OpenLash->new(
-	llm	 => $llm,
-	comm	=> $comm,
-	skills  => $skills,
-	plugins => $plugins,
-	memory  => $memory,
-	lessons => $lessons,
-	tasks   => $tasks,
+    llm => $llm,
+    comm => $comm,
+    skills_obj => $skills,
+    plugins_obj => $plugins,
+    memory => $memory,
+    lessons => $lessons,
+    tasks => $tasks,
 );
 
 print "OpenLash CLI ready (exit zum Beenden)\n";
