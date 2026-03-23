@@ -1,7 +1,7 @@
 package OpenLash::Skills;
 use strict; use warnings;
 use Path::Tiny;
-use JSON::PP;
+use JSON::PP qw(decode_json);
 
 sub new {
 	my ($class, %args) = @_;

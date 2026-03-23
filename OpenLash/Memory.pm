@@ -2,7 +2,7 @@ package OpenLash::Memory;
 use strict; use warnings;
 use Path::Tiny;
 use DBI;
-use JSON::PP;
+use JSON::PP qw(encode_json);
 
 sub new {
 	my ($class, %args) = @_;

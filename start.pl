@@ -54,19 +54,22 @@ $channels->[0] = {
 $connections->[0]->{channels} = $channels;
 #$connections->[1]->{channels} = @{$channels};
 
-my $comms;
+my $comms = [];  # Initialize as array ref
 my $ci = 0;
-foreach my $c (@{$connections})
-{
-	print "CI:$ci:".Dumper(\$c);
-	my @_channels = $c->{channels};
-	foreach my $chan (@_channels)
-	{
-		$comms->[$ci++] = OpenLash::Comm->new(name=>$c->{name}, type=>$c->{type}, token=>$c->{token},chat_id=>$ci);
-	}
+foreach my $c (@{$connections}) {
+    print "CI:$ci:".Dumper(\$c);
+    my @_channels = @{$c->{channels} || []};  # Ensure array ref
+    foreach my $chan (@_channels) {
+        $comms->[$ci++] = OpenLash::Comm->new(
+            name => $c->{name} || "conn_$ci",
+            type => $c->{type},
+            token => $c->{token},
+            chat_id => $chan->{chat_id} || $ci  # Use channel-specific if available
+        );
+    }
 }
 print "COMMS:\n";
-die( Dumper(\$comms));
+print Dumper(\$comms);  # Remove die for production
 
 my $agent = OpenLash->new(ws=>'/tmp/Alfred', comm=>$comms);
 my $server = OpenLash::Server->new(agent => $agent);

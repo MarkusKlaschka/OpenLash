@@ -22,7 +22,6 @@ sub new {
 	$self->{ws}->child("skills")->mkpath;
 	$self->_init_db;
 
-	die(Dumper(\$self));
 	return $self;
 }
 
