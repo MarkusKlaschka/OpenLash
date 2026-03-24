@@ -89,12 +89,13 @@ sub call {
 }
 
 1;
-al backoff stub
-            $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
-        }
-        return decode_json($res->{content}) if $res->{success};
-    }
-    die "LLM error: $res->{content} (status: $res->{status})";
-}
 
-1;
+#al backoff stub
+#            $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
+#        }
+#        return decode_json($res->{content}) if $res->{success};
+#    }
+#    die "LLM error: $res->{content} (status: $res->{status})";
+#}
+#
+#1;
