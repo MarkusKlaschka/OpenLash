@@ -1,0 +1,26 @@
+{
+  "job_id": "Idea2-Tool-Development-Marketplace",
+  "description": "Custom Tool/Script Development & Marketplace Sales",
+  "status": "prototype_built_and_tested",
+  "date_started": "2026-03-08",
+  "brainstorm": {
+    "ideas": ["Python script for automated email summarization", "JS bookmarklet for web research", "Daily Habit Tracker (selected)"],
+    "selected_tool": "Daily Habit Tracker - Python script for adding/logging habits and generating reports"
+  },
+  "assets": {
+    "script": {"path": "tools/habit_tracker.py", "features": ["Add habits with goals", "Daily logging", "Weekly JSON reports"], "tested": true},
+    "docs": {"path": "tools/README.md", "includes": "Installation, usage, pricing suggestion ($15), sales page draft"}
+  },
+  "monetization": {
+    "platform": "Gumroad",
+    "pricing": "$15 (script + customization guide)",
+    "sales_page_draft": "Title: Unlock Better Habits with This AI-Powered Tracker; Description: Automate tracking, instant download"
+  },
+  "next_actions": [
+    "Package as zip or Git repo",
+    "Research Gumroad setup (requirements, no account creation yet)",
+    "Develop 1-2 more tools if this succeeds",
+    "Test edge cases and add user input CLI"
+  ],
+  "notes": "Fully autonomous dev; no external uploads. Potential: Sell multiple units for steady income."
+}

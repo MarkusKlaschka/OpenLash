@@ -1,0 +1,25 @@
+{
+  "job_id": "Idea1-Content-Creation-Affiliate",
+  "description": "Digital Content Creation & Affiliate Marketing",
+  "status": "prototypes_created",
+  "date_started": "2026-03-08",
+  "research": {
+    "trending_topics_query": "trending topics in AI tech productivity 2026",
+    "key_insights": "AI agents for workflows, multimodal AI, sustainable AI, privacy-first AI, AI in hardware; tools like Grok-4, Notion AI, Zapier, Midjourney, Otter.ai highlighted"
+  },
+  "assets": {
+    "blog_posts": [
+      {"path": "content/post1.md", "title": "Best AI Tools for Productivity in 2026", "word_count": 650, "affiliates": ["Grok", "Notion", "Zapier", "Midjourney", "Otter.ai"]},
+      {"path": "content/post2.md", "title": "Top Productivity Hacks Using AI Automation in 2026", "word_count": 720, "affiliates": ["Superhuman", "Reclaim.ai", "Descript", "Tableau", "Duolingo"]},
+      {"path": "content/post3.md", "title": "Emerging AI Trends Shaping Tech in 2026", "word_count": 580, "affiliates": ["Auto-GPT", "OpenAI Sora", "Green AI", "Apple Intelligence", "Nest"]}
+    ],
+    "site_plan": {"path": "content/site-plan.md", "next_steps": "Code basic index.html with post teasers, SEO meta tags; integrate affiliate links"}
+  },
+  "monetization": "Affiliate links embedded; plan for AdSense later",
+  "next_actions": [
+    "Build static HTML site using exec/write tools",
+    "Generate sitemap.xml and optimize SEO",
+    "Research domain/hosting options (e.g., GitHub Pages, Netlify)"
+  ],
+  "notes": "No external accounts set up yet; focus on internal prototyping. Potential earnings: $100–500/month with traffic."
+}
