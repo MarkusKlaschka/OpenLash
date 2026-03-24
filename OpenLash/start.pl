@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use lib './';
+use FindBin;
+use lib "$FindBin::RealBin/lib";
 
 use OpenLash::Server;
 use OpenLash;

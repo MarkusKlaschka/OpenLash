@@ -62,6 +62,7 @@ sub build_prompt {
 
  # Use Skills method instead of manual (and now-broken) array deref
  $p .= $self->{skills}->get_prompt_text() . "\n\n";
+$p .= "=== Active Named Memories ===\n" . $self->{memory}->get_active_named() . "\n\n";
 
  $p .= join("\n", map { "$_->[0]: $_->[1]" } $self->_get_history());
  return $p;

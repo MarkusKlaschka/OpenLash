@@ -23,12 +23,14 @@ sub _init_db {
             value       TEXT,
             keywords    TEXT,           -- JSON array
             importance  INTEGER DEFAULT 5,
-            context     TEXT
+            context     TEXT,
+            active      INTEGER DEFAULT 0
         )
     ");
     # Index for faster keyword search
     $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_keywords ON memory(keywords)");
     $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_importance ON memory(importance DESC, timestamp DESC)");
+    $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_active ON memory(active)");
 }
 
 # Speichern mit Metadaten

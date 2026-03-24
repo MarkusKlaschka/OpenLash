@@ -37,5 +37,5 @@ while (1) {
 	print "> ";
 	my $input = <STDIN>; chomp $input;
 	last if $input eq "exit";
-	print $agent->ask($input), "\n";
+ $comm->handle_message('cli', $input) or print $agent->ask($input), "\n";
 }
