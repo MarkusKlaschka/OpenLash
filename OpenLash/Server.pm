@@ -1,6 +1,7 @@
 package OpenLash::Server;
 use strict; use warnings;
 use IO::Socket::UNIX;
+use IO::Socket::INET;
 use IO::Select;
 use OpenLash;
 
@@ -8,6 +9,7 @@ sub new {
 	my ($class, %args) = @_;
 	my $self = bless {
 		socket_path => $args{socket} || "/tmp/OpenLash.sock",
+		port => $args{port},
 		agent	   => $args{agent},
 		running	 => 0,
 	}, $class;
@@ -16,14 +18,24 @@ sub new {
 
 sub start {
 	my $self = shift;
-	unlink $self->{socket_path} if -e $self->{socket_path};
-	$self->{sock} = IO::Socket::UNIX->new(
-		Local  => $self->{socket_path},
-		Type   => SOCK_STREAM,
-		Listen => 5
-	) or die "Kann Socket nicht öffnen: $!";
-
-	print "OpenLash Daemon läuft – Socket: $self->{socket_path}\n";
+	if ($self->{port}) {
+		$self->{sock} = IO::Socket::INET->new(
+			LocalAddr => '0.0.0.0',
+			LocalPort => $self->{port},
+			Proto     => 'tcp',
+			Listen    => 5,
+			Reuse     => 1,
+		) or die "Cannot open TCP socket on port $self->{port}: $!";
+		print "OpenLash Daemon running on port $self->{port}\n";
+	} else {
+		unlink $self->{socket_path} if -e $self->{socket_path};
+		$self->{sock} = IO::Socket::UNIX->new(
+			Local  => $self->{socket_path},
+			Type   => SOCK_STREAM,
+			Listen => 5
+		) or die "Kann Socket nicht öffnen: $!";
+		print "OpenLash Daemon läuft – Socket: $self->{socket_path}\n";
+	}
 	$self->{running} = 1;
 
 	my $select = IO::Select->new($self->{sock});
@@ -58,7 +70,12 @@ sub handle_client {
 sub stop {
 	my $self = shift;
 	$self->{running} = 0;
-	unlink $self->{socket_path} if -e $self->{socket_path};
+	if ($self->{sock}) {
+		$self->{sock}->close();
+	}
+	if (!defined $self->{port} && $self->{socket_path} && -e $self->{socket_path}) {
+		unlink $self->{socket_path};
+	}
 }
 
 1;

@@ -1,81 +1,34 @@
-#
-#
-#
+#!/usr/bin/perl
+
 use strict;
 use warnings;
-use lib './';
-use Data::Dumper;
-use OpenLash::Server;
+use Getopt::Long;
+use lib './OpenLash';
 use OpenLash;
+use OpenLash::Server;
 
-use constant true  => 0;
-use constant false => 1;
+my $socket_path = '/tmp/OpenLash.sock';
+my $port;
 
-# TODO: load CONFIG... set variables...
+GetOptions(
+    'socket=s' => \$socket_path,
+    'port=i' => \$port,
+) or die "Usage: $0 [--socket=path] [--port=number]\n";
 
-my $connections;
-$connections->[0]->{type} = 'telegram';
-$connections->[0]->{token} = "TOKEN";
-$connections->[0]->{users} = { USER_ID=>15, OTHER_BOT_ID=>7};
+my $agent = OpenLash->new();
 
-#$connections->[1]->{type} = 'telegram2';
-#$connections->[1]->{token} = "TOKEN2";
-#$connections->[1]->{users} = { USER_ID2=>15, OTHER_BOT_ID2=>7};
-
-my $channels;
-$channels->[0] = {
-	name		=>"OpenLashTeam",
-	provider	=> 'telegram',
-	type		=> 'private',
-	listen_msg	=> 'all',
-	listen_from	=> 'all',
-	react_mode	=> 1,
-	perms		=> [
-		MorganCarter => {
-			read_mem_short	=> true,
-			read_mem_long	=> true,
-			save_mem_short	=> true,
-			save_mem_long	=> true,
-			exec_syscmd	=> true,
-			call_ext_api	=> true,
-			update_home	=> true,
-			dynload_skills	=> true,
-			dynload_plugins	=> true,
-			dynload_tools	=> true,
-		}
-	],
-	skills => ['git', 'team'],
-	plugins => [],
-	tools => [],
-	model_access => ['*'],
-	foo=>"bar"
-};
-#$connections->[0]->{channels} = {};
-$connections->[0]->{channels} = $channels;
-#$connections->[1]->{channels} = @{$channels};
-
-my $comms = [];  # Initialize as array ref
-my $ci = 0;
-foreach my $c (@{$connections}) {
-    print "CI:$ci:".Dumper(\$c);
-    my @_channels = @{$c->{channels} || []};  # Ensure array ref
-    foreach my $chan (@_channels) {
-        $comms->[$ci++] = OpenLash::Comm->new(
-            name => $c->{name} || "conn_$ci",
-            type => $c->{type},
-            token => $c->{token},
-            chat_id => $chan->{chat_id} || $ci  # Use channel-specific if available
-        );
-    }
+my %args = (agent => $agent);
+if ($port) {
+    $args{port} = $port;
+} else {
+    $args{socket} = $socket_path;
 }
-print "COMMS:\n";
-print Dumper(\$comms);
 
-my $agent = OpenLash->new(
-    ws => '/tmp/OpenLash',
-    comm => $comms,
-    default_channel => 'OpenLashTeam'
-);
+my $server = OpenLash::Server->new(%args);
 
-my $server = OpenLash::Server->new(agent => $agent);
-$server->start;
+$SIG{INT} = sub {
+    $server->stop();
+    exit 0;
+};
+
+$server->start();
