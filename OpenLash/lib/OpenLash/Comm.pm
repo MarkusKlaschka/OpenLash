@@ -61,6 +61,19 @@ sub handle_message {
 sub _cmd_nml { $_[0]->{memory}->nm_list(all => 1) }
 sub _cmd_nmla { $_[0]->{memory}->nm_list(active => 1) }
 sub _cmd_nma { $_[0]->{memory}->nm_toggle($_[1], 1) }
+=head2 _cmd_nmd(arg)
+
+Deactivates named memory.
+
+=cut
+
+sub _cmd_nmd { $_[0]->{memory}->nm_toggle($_[1], 0) }
+
+1;>{memory}->nm_toggle($_[1], 0) }
+
+1;) }
+
+1;d_nma { $_[0]->{memory}->nm_toggle($_[1], 1) }
 sub _cmd_nmd { $_[0]->{memory}->nm_toggle($_[1], 0) }
 
 1;>{memory}->nm_toggle($_[1], 0) }
