@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use lib './';
-use Data::Dumper;
+
 use OpenLash::Server;
 use OpenLash;
 use OpenLash::Comm;
@@ -15,6 +15,16 @@ my $agent = OpenLash->new(
  workspace => '/tmp/OpenLash', # consistent key
  comm => $comm,
  default_channel => 'OpenLashTeam'
+);
+
+my $server = OpenLash::Server->new(agent => $agent);
+$server->start;
+);
+
+my $agent = OpenLash->new(
+ workspace => $workspace,
+ comm => $comm,
+ default_channel => $default_channel
 );
 
 my $server = OpenLash::Server->new(agent => $agent);
