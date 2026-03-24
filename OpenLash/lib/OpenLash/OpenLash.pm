@@ -29,6 +29,7 @@ sub new {
 
  # Register plugins with agent
  $self->{plugins}->register_all($self);
+Log::Log4perl->easy_init({ level => $DEBUG, file => ">>" . $self->{ws}->child("openlash.log") });
 
  return $self;
 }

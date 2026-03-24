@@ -22,6 +22,12 @@ sub add_channel {
  $self->{channels}{$name} = { type => $type, config => $config };
 }
 
+=head2 send(...)
+
+Future hook for Telegram/Discord. Currently STDOUT only.
+
+=cut
+
 sub send {
  my ($self, $channel, $message) = @_;
  my $ch = $self->{channels}{$channel} or return "Channel $channel not found";
@@ -56,5 +62,7 @@ sub _cmd_nml { $_[0]->{memory}->nm_list(all => 1) }
 sub _cmd_nmla { $_[0]->{memory}->nm_list(active => 1) }
 sub _cmd_nma { $_[0]->{memory}->nm_toggle($_[1], 1) }
 sub _cmd_nmd { $_[0]->{memory}->nm_toggle($_[1], 0) }
+
+1;>{memory}->nm_toggle($_[1], 0) }
 
 1;

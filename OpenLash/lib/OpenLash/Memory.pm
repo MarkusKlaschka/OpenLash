@@ -31,6 +31,7 @@ sub _init_db {
     $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_keywords ON memory(keywords)");
     $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_importance ON memory(importance DESC, timestamp DESC)");
     $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_active ON memory(active)");
+ $self->{dbh}->do("CREATE INDEX idx_keywords ON memory(keywords)"); 
 }
 
 # Speichern mit Metadaten
@@ -44,6 +45,7 @@ sub store {
 # Suche nach Keywords
 sub recall_keywords {
 	my ($self, @keywords) = @_;
+	INFO "Recalling by keywords: @keywords";
 	my $like = "%" . join("%", @keywords) . "%";
 	return $self->{dbh}->selectall_arrayref("SELECT * FROM memory WHERE keywords LIKE ? ORDER BY importance DESC, timestamp DESC LIMIT 20", {Slice=>{}}, $like);
 }
@@ -120,5 +122,11 @@ sub get_active_named {
  my $rows = $self->{dbh}->selectall_arrayref("SELECT value FROM memory WHERE active = 1 ORDER BY timestamp DESC", {Slice => {}});
  return join("\n", map { $_->{value} } @$rows) || "";
 }
+
+1;
+ $_->{value} } @$rows) || "";
+}
+
+1;
 
 1;

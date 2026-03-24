@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::RealBin/lib";
+die "PERL5LIB missing lib/" unless -d "$FindBin::Bin/lib";
 
 use OpenLash::Server;
 use OpenLash;

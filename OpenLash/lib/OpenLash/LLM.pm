@@ -19,6 +19,7 @@ sub new {
 
 sub call {
  my ($self, $system, $messages, $model_name) = @_;
+ INFO "Calling LLM with model: $model_name";
  $model_name ||= $self->{model};
 
  my $endpoint = $self->{endpoint} =~ s/generate/chat/r; # /api/chat instead of /api/generate

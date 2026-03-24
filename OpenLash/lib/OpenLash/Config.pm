@@ -9,6 +9,7 @@ our $VERSION = '0.01';
 
 sub load {
     my ($class, $provider) = @_;
+    INFO "Loading config for provider: $provider";
     my $file = File::Spec->catfile('providers', "$provider.json");
     open my $fh, '<', $file or die "Cannot open $file: $!";
     my $json = do { local $/; <$fh> };
