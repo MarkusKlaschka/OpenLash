@@ -94,4 +94,31 @@ sub import {
 sub clear { $_[0]->{dbh}->do("DELETE FROM memory") }
 
 
+sub nm_store {
+ my ($self, $name, $text, $active) = @_;
+ $active //= 0;
+ $self->store($text, key => $name, active => $active);
+ return "Stored named memory '$name' (active: $active)";
+}
+
+sub nm_list {
+ my ($self, %opts) = @_;
+ my $where = $opts{active} ? "WHERE active = 1" : ($opts{all} ? "" : "WHERE active = 1");
+ my $rows = $self->{dbh}->selectall_arrayref("SELECT key, active FROM memory $where GROUP BY key", {Slice => {}});
+ return join("\n", map { "$_->{key} (active: $_->{active})" } @$rows) || "No named memories";
+}
+
+sub nm_toggle {
+ my ($self, $name, $active) = @_;
+ return "Name required" unless $name;
+ $self->{dbh}->do("UPDATE memory SET active = ? WHERE key = ?", undef, $active, $name);
+ return "Toggled '$name' to active: $active";
+}
+
+sub get_active_named {
+ my $self = shift;
+ my $rows = $self->{dbh}->selectall_arrayref("SELECT value FROM memory WHERE active = 1 ORDER BY timestamp DESC", {Slice => {}});
+ return join("\n", map { $_->{value} } @$rows) || "";
+}
+
 1;
