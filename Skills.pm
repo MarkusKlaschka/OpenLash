@@ -4,12 +4,12 @@ use Path::Tiny;
 use JSON::PP qw(decode_json);
 
 sub new {
- my ($class, %args) = @_;
- my $self = bless {
- skills => [], # Array von Skill-Hashes
- ws => path($args{ws} || $args{workspace} || "$ENV{HOME}/.OpenLash")
- }, $class;
- return $self;
+    my ($class, %args) = @_;
+    my $self = bless {
+        skills => [],                       # Array von Skill-Hashes
+        ws     => path($args{workspace} || "$ENV{HOME}/.myclaw")
+    }, $class;
+    return $self;
 }
 
 # Skill hinzufügen (Name + optional Params)

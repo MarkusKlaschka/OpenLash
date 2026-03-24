@@ -18,28 +18,28 @@ sub new {
 }
 
 sub call {
-    my ($self, $prompt, $options, $max_tokens) = @_;
-    $options ||= {};
-    $max_tokens ||= 2048;
+ my ($self, $system, $messages, $model_name) = @_;
+ $model_name ||= $self->{model};
 
-    my $req = POST $self->{endpoint},
-        Content_Type => 'application/json',
-        Content => encode_json({
-            model => $self->{model},
-            prompt => $prompt,
-            options => {
-                temperature => 0.3,
-                top_p => 0.9,
-                max_tokens => $max_tokens,
-                %$options,
-            },
-        });
+ my $endpoint = $self->{endpoint} =~ s/generate/chat/r; # /api/chat instead of /api/generate
+ my $req = POST $endpoint,
+ Content_Type => 'application/json',
+ Content => encode_json({
+ model => $model_name || $self->{model},
+ messages => [
+ { role => "system", content => $system },
+ @$messages
+ ],
+ stream => JSON::PP::false,
+ options => { temperature => 0.3, top_p => 0.9 },
+ # tools can be added here later (Ollama supports them)
+ });
 
-    my $res = $self->{ua}->request($req);
-    die "LLM call failed: " . $res->status_line unless $res->is_success;
+ my $res = $self->{ua}->request($req);
+ die "LLM call failed: " . $res->status_line unless $res->is_success;
 
-    my $data = decode_json($res->content);
-    return $data->{response} || '';
-}
+ my $data = decode_json($res->content);
+ return $data; # now returns the full chat response (with tool_calls when supported)
+ }
 
 1;
