@@ -1,34 +1,21 @@
 #!/usr/bin/perl
-
 use strict;
 use warnings;
-use Getopt::Long;
-use lib './OpenLash';
-use OpenLash;
+use lib './';
+use Data::Dumper;
 use OpenLash::Server;
+use OpenLash;
+use OpenLash::Comm;
 
-my $socket_path = '/tmp/OpenLash.sock';
-my $port;
+# Load real config (no more hardcoded mess)
+my $comm = OpenLash::Comm->new();
+$comm->load_config('connections.json') if -e 'connections.json';
 
-GetOptions(
-    'socket=s' => \$socket_path,
-    'port=i' => \$port,
-) or die "Usage: $0 [--socket=path] [--port=number]\n";
+my $agent = OpenLash->new(
+ workspace => '/tmp/OpenLash', # consistent key
+ comm => $comm,
+ default_channel => 'OpenLashTeam'
+);
 
-my $agent = OpenLash->new();
-
-my %args = (agent => $agent);
-if ($port) {
-    $args{port} = $port;
-} else {
-    $args{socket} = $socket_path;
-}
-
-my $server = OpenLash::Server->new(%args);
-
-$SIG{INT} = sub {
-    $server->stop();
-    exit 0;
-};
-
-$server->start();
+my $server = OpenLash::Server->new(agent => $agent);
+$server->start;
