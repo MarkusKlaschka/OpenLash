@@ -5,6 +5,7 @@ use DBI;
 use JSON::PP qw(decode_json); # <-- was missing
 use lib './';
 use OpenLash::LLM;
+use JSON::PP qw(decode_json); # <-- add this
 use OpenLash::Comm;
 use OpenLash::Skills;
 use OpenLash::Plugins;
