@@ -1,0 +1,4 @@
+{
+  "map": "Extract key facts from this text chunk as JSON array of objects: [{event: \"description\", entities: [\"list\"], insight: \"key takeaway\", importance: number 0-1, date: \"ISO if available\"}]. Also provide a short narrative summary (max 200 words).\n\nText: {chunk}\n\nMetadata: {metadata}\n\nOutput strict JSON only: {\"facts\": [...], \"summary\": \"narrative\"}",
+  "reduce": "From these aggregated facts and chunk summaries, create a meta-summary (max 500 tokens) capturing key themes, events, and insights. Refine facts if needed but keep structure.\n\nFacts: {facts}\n\nSummaries: {summaries}\n\nMetadata: {metadata}\n\nOutput strict JSON: {\"facts\": [...], \"summary\": \"concise meta-narrative\"}"
+}

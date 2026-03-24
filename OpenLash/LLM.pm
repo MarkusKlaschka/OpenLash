@@ -39,9 +39,25 @@ sub add_model {
 
 sub set_default { $_[0]->{default_model} = $_[1] }
 
-# JSON Import/Export
-sub load_config { my ($self, $file) = @_; my $data = decode_json(path($file)->slurp); $self->add_provider($_->{name}, %{$_->{provider}}) for @{$data->{providers} || []}; $self->add_model($_->{name}, %$_) for @{$data->{models} || []}; }
-sub save_config { my ($self, $file) = @_; path($file)->spew(encode_json({providers => [values %{$self->{providers}}], models => [values %{$self->{models}}]})); }
+# Load per-provider JSON configs from dir
+sub load_provider_configs {
+    my ($self, $dir) = @_;
+    $dir ||= 'providers';
+    my $path = path($dir);
+    return unless $path->exists;
+    
+    for my $json_file ($path->children(qr/\.json$/)) {
+        my $data = decode_json($json_file->slurp);
+        my $prov = $data->{provider};
+        $self->add_provider($prov->{name}, %$prov) if $prov;
+        
+        for my $model (@{$data->{models} || []}) {
+            $model->{provider} = $prov->{name};
+            $self->add_model($model->{name}, %$model);
+        }
+    }
+    return scalar keys %{$self->{providers}};
+}
 
 # Aufruf (verwendet Provider + Model-Metadaten)
 sub call {
@@ -63,8 +79,9 @@ sub call {
         ? {model => $name, max_tokens => $model->{max_tokens_out}, system => $system, messages => $messages}
         : {model => $name, messages => [{role => "system", content => $system}, @$messages], stream => "false", temperature => 0};
 
-    # Basic rate limit: Sleep 1s between calls (expand as needed)
-    sleep 1;
+    # Rate limit: Adaptive sleep based on provider (e.g., 1s for xai, 0.5s others)
+    my $rate_sleep = $prov->{name} eq 'xai' ? 1 : 0.5;
+    sleep $rate_sleep;
 
     my $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
     return decode_json($res->{content}) if $res->{success};
@@ -72,3 +89,13 @@ sub call {
 }
 
 1;
+
+#al backoff stub
+#            $res = $http->post($prov->{base_url}, {headers => $headers, content => encode_json($body)});
+#        }
+#        return decode_json($res->{content}) if $res->{success};
+#    }
+#    die "LLM error: $res->{content} (status: $res->{status})";
+#}
+#
+#1;

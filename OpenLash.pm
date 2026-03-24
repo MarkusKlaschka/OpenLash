@@ -5,6 +5,8 @@ use DBI;
 use lib './';
 use OpenLash::LLM;
 use OpenLash::Comm;
+use OpenLash::Skills;
+use OpenLash::Plugins;
 use Data::Dumper;
 
 sub new {
@@ -113,15 +115,15 @@ sub clear_history { $_[0]->{dbh}->do("DELETE FROM history") }
 sub list_skills   { join ", ", @{$_[0]->{skills}} }
 
 1;
-cs", "Query cost: approx. " . ($model_name ? "TBD" : "low"));
-        }
-
-        return $answer;
-    }
-}
-
+#cs", "Query cost: approx. " . ($model_name ? "TBD" : "low"));
+#        }
+#
+#        return $answer;
+#    }
+#}
+#
 # Hilfsmethoden
-sub clear_history { $_[0]->{dbh}->do("DELETE FROM history") }
-sub list_skills   { join ", ", @{$_[0]->{skills}} }
+#sub clear_history { $_[0]->{dbh}->do("DELETE FROM history") }
+#sub list_skills   { join ", ", @{$_[0]->{skills}} }
 
 1;

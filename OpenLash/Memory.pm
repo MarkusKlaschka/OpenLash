@@ -12,20 +12,23 @@ sub new {
 }
 
 sub _init_db {
-	my $self = shift;
-	$self->{dbh} = DBI->connect("dbi:SQLite:dbname=" . $self->{ws}->child("memory.db"), "", "", {RaiseError => 1});
-	$self->{dbh}->do("
-		CREATE TABLE IF NOT EXISTS memory (
-			id		  INTEGER PRIMARY KEY,
-			session_id  TEXT,
-			timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP,
-			key		 TEXT,
-			value	   TEXT,
-			keywords	TEXT,		  -- JSON-Array
-			importance  INTEGER DEFAULT 5,
-			context	 TEXT
-		)
-	");
+    my $self = shift;
+    $self->{dbh} = DBI->connect("dbi:SQLite:dbname=" . $self->{ws}->child("memory.db"), "", "", {RaiseError => 1});
+    $self->{dbh}->do("
+        CREATE TABLE IF NOT EXISTS memory (
+            id          INTEGER PRIMARY KEY,
+            session_id  TEXT,
+            timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP,
+            key         TEXT,
+            value       TEXT,
+            keywords    TEXT,           -- JSON array
+            importance  INTEGER DEFAULT 5,
+            context     TEXT
+        )
+    ");
+    # Index for faster keyword search
+    $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_keywords ON memory(keywords)");
+    $self->{dbh}->do("CREATE INDEX IF NOT EXISTS idx_importance ON memory(importance DESC, timestamp DESC)");
 }
 
 # Speichern mit Metadaten
@@ -71,6 +74,22 @@ sub get_prompt_text {
 	return "=== Langzeitgedächtnis ===\n" . join("\n", map { "[$_->{timestamp}] $_->{value}" } @$rows);
 }
 
+sub export {
+    my ($self, $file) = @_;
+    my $rows = $self->{dbh}->selectall_arrayref("SELECT * FROM memory ORDER BY timestamp", {Slice => {}});
+    path($file)->spew(encode_json($rows));
+    return scalar @$rows;
+}
+
+sub import {
+    my ($self, $file) = @_;
+    return unless -e $file;
+    my $data = decode_json(path($file)->slurp);
+    $self->store_batch($_) for @$data;
+    return scalar @$data;
+}
+
 sub clear { $_[0]->{dbh}->do("DELETE FROM memory") }
+
 
 1;
