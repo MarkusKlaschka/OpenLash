@@ -150,24 +150,24 @@ sub start_listening {
     $self->_log_msg("Listening started for non-Telegram channels (CLI/IRC).");
 }
 
-1;
- handle (e.g., non-text messages stubbed)
-                    if ($text) {
-                        print "Received from Telegram ($name, chat $chat_id): $text\n";
-                        $_->($name, $text, { chat_id => $chat_id, from_id => $from_id }) 
-                            for @{$self->{handlers}};
-                    } else {
-                        # Handle non-text (e.g., stickers, photos) – stub
-                        $self->send($name, "Unsupported message type received.", { chat_id => $chat_id });
-                    }
-                }
-            }; if ($@) { warn "Telegram poll error for $name: $@" }
-            
-            sleep $poll_interval;
-        }
-    }
-    
-    # For CLI/IRC: These are event-driven externally; no poll needed here
-}
+#1;
+# handle (e.g., non-text messages stubbed)
+#                    if ($text) {
+#                        print "Received from Telegram ($name, chat $chat_id): $text\n";
+#                        $_->($name, $text, { chat_id => $chat_id, from_id => $from_id }) 
+#                            for @{$self->{handlers}};
+#                    } else {
+#                        # Handle non-text (e.g., stickers, photos) – stub
+#                        $self->send($name, "Unsupported message type received.", { chat_id => $chat_id });
+#                    }
+#                }
+#            }; if ($@) { warn "Telegram poll error for $name: $@" }
+#            
+#            sleep $poll_interval;
+#        }
+#    }
+#    
+#    # For CLI/IRC: These are event-driven externally; no poll needed here
+#}
 
 1;
