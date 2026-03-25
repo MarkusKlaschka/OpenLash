@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use lib 'OpenLash/Providers';
+use lib 'OpenLash/lib/OpenLash', 'OpenLash/Providers';
 use OpenLash::Providers::Telegram;
 use Data::Dumper;
 
