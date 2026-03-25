@@ -10,6 +10,7 @@ use OpenLash::Comm;
 use OpenLash::Skills;
 use OpenLash::Plugins;
 use Data::Dumper;
+use OpenLash::Log;
 
 sub new {
  my ($class, %args) = @_;

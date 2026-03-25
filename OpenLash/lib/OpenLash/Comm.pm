@@ -30,9 +30,10 @@ Future hook for Telegram/Discord. Currently STDOUT only.
 
 sub send {
  my ($self, $channel, $message) = @_;
- my $ch = $self->{channels}{$channel} or return "Channel $channel not found";
+ my $ch = $self->{channels}{$channel} or { OLlog('ERROR', "Channel $channel not found"); return };
  # Stub: print for now
  print "[$channel] $message\n";
+ OLinfo("Sent message to $channel");
  # Extend for real Telegram, etc.
 }
 

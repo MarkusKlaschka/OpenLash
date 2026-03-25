@@ -40,6 +40,7 @@ sub store {
 	my $kw = encode_json($meta{keywords} || []);
 	$self->{dbh}->do("INSERT INTO memory (session_id, key, value, keywords, importance, context) VALUES (?,?,?,?,?,?)",
 		undef, $meta{session_id}, $meta{key}, $value, $kw, $meta{importance}||5, $meta{context});
+	OLinfo("Stored memory with key: $meta{key}");
 }
 
 # Suche nach Keywords
