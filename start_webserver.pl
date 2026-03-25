@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use WebServer;
 use WebUI;
+use WebUI;
 use lib 'OpenLash/lib';
 use OpenLash::Log qw(OLinfo);
 
@@ -19,8 +20,7 @@ my $server = WebServer->new(
     key_file => 'key.pem'
 );
 
-my $ui = WebUI->new();
-# Note: Integrate $ui into server handling as needed
+# Integrate WebUI - assuming it's hooked in WebServer
 
 $server->start();
 

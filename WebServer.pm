@@ -29,22 +29,21 @@ sub start {
 
     OpenLash::Log::OLinfo("Starting SSL web server on port $self->{port}");
 
-    my $server = IO::Socket::SSL->new(
+    use HTTP::Daemon::SSL;
+    my $d = HTTP::Daemon::SSL->new(
         LocalPort => $self->{port},
-        Listen    => 5,
-        Reuse     => 1,
         SSL_cert_file => $self->{cert_file},
-        SSL_key_file  => $self->{key_file},
-        SSL_verify_mode => SSL_VERIFY_NONE,  # For simplicity; adjust for production
-    ) or die "Cannot create SSL socket: " . IO::Socket::SSL::errstr();
+        SSL_key_file => $self->{key_file},
+    ) or die "Cannot create daemon: $!";
 
     OpenLash::Log::OLinfo("SSL Server started and listening on port $self->{port}");
 
-    while (my $client = $server->accept()) {
-        $self->handle_request($client);
+    while (my $c = $d->accept) {
+        while (my $r = $c->get_request) {
+            $self->handle_request($c, $r);
+        }
+        $c->close;
     }
-
-    $server->close();
 }
 
 sub handle_request {
