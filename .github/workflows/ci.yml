@@ -1,0 +1,25 @@
+name: Perl CI
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Perl
+      uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.36'
+    - name: Install dependencies
+      run: cpanm --installdeps .
+    - name: Run tests
+      run: prove -Ilib t/
+    - name: Perl::Critic
+      run: |
+        cpanm Perl::Critic
+        perlcritic --stern lib/ t/ *.pm *.pl
