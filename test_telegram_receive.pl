@@ -2,13 +2,13 @@
 
 use strict;
 use warnings;
-use lib '.';
+use lib '/home/ubuntu/perl5/lib/perl5', '.';
 use OpenLash::Providers::Telegram;
 use Data::Dumper;
 
 my $tg = OpenLash::Providers::Telegram->new(token => $ENV{TELEGRAM_API});
 
-my $updates = $tg->get_updates();
+my $updates = $tg->get_updates({ offset => -1 });  # Get last update
 
 print Dumper($updates);
 
