@@ -4,7 +4,8 @@ use strict;
 use warnings;
 use WebServer;
 use WebUI;
-use Log;  # Assuming Log.pm is available
+use lib 'OpenLash/lib';
+use OpenLash::Log qw(OLinfo);
 
 # Initialize logger
 my $logger = Log->new();
@@ -18,8 +19,8 @@ my $server = WebServer->new(
     key_file => 'key.pem'
 );
 
-# Integrate WebUI for handling requests
-# Note: In a real setup, you'd hook WebUI into the request handler in WebServer.pm
+my $ui = WebUI->new();
+# Note: Integrate $ui into server handling as needed
 
 $server->start();
 

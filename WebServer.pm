@@ -8,7 +8,7 @@ use IO::Socket::SSL;
 use HTTP::Daemon;
 use HTTP::Status;
 use HTTP::Response;
-use Log;  # Assuming Log.pm from previous work
+use OpenLash::Log qw(OLinfo OLlog);
 
 our $VERSION = '0.1';
 
@@ -19,7 +19,7 @@ sub new {
     $self->{port} = $args{port} || 443;
     $self->{cert_file} = $args{cert_file} || 'cert.pem';
     $self->{key_file} = $args{key_file} || 'key.pem';
-    $self->{logger} = Log->new();  # Initialize logger
+    $self->{logger} = 'OpenLash::Log';  # Use functions directly
 
     return $self;
 }
@@ -27,7 +27,7 @@ sub new {
 sub start {
     my ($self) = @_;
 
-    OLinfo("Starting SSL web server on port $self->{port}");
+    OpenLash::Log::OLinfo("Starting SSL web server on port $self->{port}");
 
     my $server = IO::Socket::SSL->new(
         LocalPort => $self->{port},
@@ -38,7 +38,7 @@ sub start {
         SSL_verify_mode => SSL_VERIFY_NONE,  # For simplicity; adjust for production
     ) or die "Cannot create SSL socket: " . IO::Socket::SSL::errstr();
 
-    OLinfo("SSL Server started and listening on port $self->{port}");
+    OpenLash::Log::OLinfo("SSL Server started and listening on port $self->{port}");
 
     while (my $client = $server->accept()) {
         $self->handle_request($client);
@@ -50,10 +50,21 @@ sub start {
 sub handle_request {
     my ($self, $client) = @_;
 
-    my $request = <$client>;  # Simplified; use HTTP::Daemon for proper handling
-    chomp $request;
+    use HTTP::Daemon::SSL;
+    my $d = HTTP::Daemon::SSL->new(
+        LocalPort => $self->{port},
+        SSL_cert_file => $self->{cert_file},
+        SSL_key_file => $self->{key_file},
+    ) or die "Cannot create daemon: $!";
+    
+    while (my $c = $d->accept) {
+        while (my $r = $c->get_request) {
+            $self->handle_request($c, $r);
+        }
+        $c->close;
+    }
 
-    OLlog("Received request: $request from " . $client->peerhost());
+    OpenLash::Log::OLlog('INFO', "Received request: $request from " . $client->peerhost());
 
     # Basic response (to be expanded with WebUI integration)
     my $response = HTTP::Response->new(RC_OK);

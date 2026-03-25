@@ -1,6 +1,8 @@
 package OpenLash::Log;
 use strict; use warnings;
 use POSIX qw(strftime);
+use Exporter 'import';
+our @EXPORT_OK = qw(OLlog OLinfo OLdebug);
 
 our $DEBUG = $ENV{OL_DEBUG} || 0;
 our $LOGFILE = $ENV{OL_LOGFILE} || 'openlash.log';
