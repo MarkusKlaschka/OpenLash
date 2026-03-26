@@ -10,7 +10,7 @@ my $tg = OpenLash::Providers::Telegram->new(token => $ENV{TELEGRAM_API});
 
 my $last_update_id = 0;
 
-while (1) {
+while (1) { eval { 
     my $updates = $tg->get_updates({ offset => $last_update_id + 1, timeout => 30 });
     if ($updates->{ok}) {
         foreach my $update (@{$updates->{result}}) {
