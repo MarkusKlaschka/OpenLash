@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use lib '/home/ubuntu/perl5/lib/perl5', '.';
+use lib 'OpenLash/lib', 'OpenLash/Providers';
 use OpenLash::Providers::Telegram;
 use Data::Dumper;
 

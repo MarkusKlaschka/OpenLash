@@ -3,8 +3,7 @@ package OpenLash::Providers::Telegram;
 use strict;
 use warnings;
 use WWW::Telegram::BotAPI;
-# Temporarily disable logging for testing
-# use OpenLash::Log qw(OLinfo OLdebug);
+use OpenLash::Log qw(OLinfo OLdebug);
 
 our $VERSION = '0.1';
 
@@ -15,7 +14,7 @@ sub new {
     $self->{token} = $args{token} || $ENV{TELEGRAM_API} or die "Telegram API token required";
     $self->{bot} = WWW::Telegram::BotAPI->new(token => $self->{token});
 
-    # OLinfo("Telegram provider initialized");
+    OLinfo("Telegram provider initialized");
 
     return $self;
 }
@@ -26,14 +25,14 @@ sub send_message {
         chat_id => $chat_id,
         text => $text
     });
-    # OLdebug("Sent message to $chat_id: $text");
+    OLdebug("Sent message to $chat_id: $text");
     return $response;
 }
 
 sub get_updates {
     my ($self) = @_;
     my $updates = $self->{bot}->getUpdates();
-    # OLdebug("Retrieved updates");
+    OLdebug("Retrieved updates");
     return $updates;
 }
 
