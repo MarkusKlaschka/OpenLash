@@ -22,7 +22,7 @@ __END__
 
 =head1 NAME
 
-WebUI - Web UI Module for OpenClaw
+WebUI - Web UI Module for OpenLash
 
 =head1 SYNOPSIS
 

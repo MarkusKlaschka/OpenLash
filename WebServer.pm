@@ -1,4 +1,4 @@
-# WebServer.pm - SSL Web Server Module for OpenClaw
+# WebServer.pm - SSL Web Server Module for OpenLash
 
 package WebServer;
 
@@ -67,7 +67,7 @@ sub handle_request {
 
     # Basic response (to be expanded with WebUI integration)
     my $response = HTTP::Response->new(RC_OK);
-    $response->content("Hello from OpenClaw WebServer!");
+    $response->content("Hello from OpenLash WebServer!");
     print $client $response->as_string();
 
     $client->close();
@@ -79,7 +79,7 @@ __END__
 
 =head1 NAME
 
-WebServer - SSL Web Server for OpenClaw
+WebServer - SSL Web Server for OpenLash
 
 =head1 SYNOPSIS
 

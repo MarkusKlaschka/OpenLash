@@ -52,7 +52,7 @@ sub _get_history {
  return reverse @$rows;
 }
 
-# Prompt-Bau exakt wie OpenClaw (Dateien + Skills + History)
+# Prompt-Bau exakt wie OpenLash (Dateien + Skills + History)
 sub build_prompt {
  my $self = shift;
  my $p = "";
