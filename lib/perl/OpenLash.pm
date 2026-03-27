@@ -54,7 +54,7 @@ sub build_prompt {
 	my $p = "";
 
 	for my $f (qw(SOUL.md AGENTS.md TOOLS.md)) {
-		my $file = $self->{ws}->child($f);
+		my $file = $self->{ws}->child("conf/main/$f");
 		$p .= $file->slurp . "\n\n" if $file->exists;
 	}
 
