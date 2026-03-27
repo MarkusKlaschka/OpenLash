@@ -1,6 +1,8 @@
 package OpenLash;
 use strict; use warnings;
 use Path::Tiny;
+use lib path(__FILE__)->parent->stringify;
+use Path::Tiny;
 use DBI;
 use lib './';
 use OpenLash::LLM;

@@ -2,6 +2,8 @@ package Memory;
 
 use strict;
 use warnings;
+use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
 use JSON::PP qw(encode_json decode_json);
 use Digest::SHA qw(sha1_hex);
 use List::Util qw(max sum);

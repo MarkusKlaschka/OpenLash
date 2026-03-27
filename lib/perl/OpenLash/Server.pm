@@ -1,5 +1,7 @@
 package OpenLash::Server;
 use strict; use warnings;
+use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
 use IO::Socket::UNIX;
 use IO::Select;
 use OpenLash;

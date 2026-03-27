@@ -2,6 +2,8 @@ package WebUI;
 
 use strict;
 use warnings;
+use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
 
 our $VERSION = '0.1';
 

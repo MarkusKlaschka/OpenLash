@@ -1,6 +1,8 @@
 package OpenLash::Lessons;
 use strict; use warnings;
 use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
+use Path::Tiny;
 use JSON::PP qw(decode_json);
 
 sub new {

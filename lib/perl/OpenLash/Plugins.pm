@@ -1,6 +1,8 @@
 package OpenLash::Plugins;
 use strict; use warnings;
 use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
+use Path::Tiny;
 use HTTP::Tiny;  # For weather fetch
 
 sub new {

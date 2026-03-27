@@ -1,5 +1,7 @@
 package OpenLash::LLM;
 use strict; use warnings;
+use Path::Tiny;
+use lib path(__FILE__)->parent->parent->stringify;
 use JSON::PP;
 use HTTP::Tiny;
 use Path::Tiny;
