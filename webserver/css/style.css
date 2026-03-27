@@ -1,32 +1,25 @@
 /* Adjusted style.css for OpenLash WebUI */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:system-ui, sans-serif; }
-
 .topbar {
  width:100%; height:100px; background:#222; color:#fff;
  display:flex; align-items:center; justify-content:center;
  font-size:1.5rem;
 }
-
 .container { display:flex; height:calc(100vh - 100px); }
-
 .sidebar {
  width:250px; background:#eee; padding:1rem; transition:transform 0.3s;
  overflow-y:auto;
 }
 .sidebar.hidden { transform:translateX(-100%); }
-
 .menu-item {
  padding:0.8rem; margin:0.5rem 0; background:#ddd; cursor:pointer;
  border-radius:4px; text-align:center;
 }
 .menu-item:hover { background:#ccc; }
-
 .content { flex:1; padding:2rem; background:#f9f9f9; }
-
 button { float:right; background:none; border:none; font-size:1.5rem; cursor:pointer; }
-
-/* Mobile: Sidebar wird unten, Content oben */
+/* Mobile: Sidebar at bottom, Content above */
 @media (max-width: 767px) {
  .container {
  flex-direction: column;
@@ -35,12 +28,12 @@ button { float:right; background:none; border:none; font-size:1.5rem; cursor:poi
  .sidebar {
  width: 100%;
  height: auto;
- transform: none; /* kein Slide mehr */
+ transform: none; /* no slide anymore */
  padding: 1rem 0;
  background: #eee;
  }
  .sidebar.hidden {
- display: none; /* komplett weg */
+ display: none; /* completely hidden */
  }
  .menu-item {
  display: inline-block;
@@ -51,11 +44,10 @@ button { float:right; background:none; border:none; font-size:1.5rem; cursor:poi
  padding: 1rem;
  }
  .topbar {
- height: 80px; /* bisschen kleiner */
+ height: 80px; /* a bit smaller */
  font-size: 1.2rem;
  }
 }
-
 .log-toggle {
  position: absolute; right:1rem; top:1rem; z-index:10;
 }
