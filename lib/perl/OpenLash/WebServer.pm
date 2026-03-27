@@ -1,96 +1,45 @@
-# WebServer.pm - SSL Web Server Module for OpenLash
-
 package OpenLash::WebServer;
-
 use strict;
 use warnings;
-use Path::Tiny;
-use lib path(__FILE__)->parent->parent->stringify;
-use IO::Socket::SSL;
-use HTTP::Daemon;
-use HTTP::Status;
-use HTTP::Response;
-use OpenLash::Log qw(OLinfo OLlog);
+use HTTP::Server::Simple::CGI;
+use base qw(HTTP::Server::Simple::CGI);
+use OpenLash::WebUI;
+use IO::Socket::INET;
+use JSON::PP;
+use File::Spec;
 
-our $VERSION = '0.1';
-
-sub new {
-    my ($class, %args) = @_;
-    my $self = bless {}, $class;
-
-    $self->{port} = $args{port} || 443;
-    $self->{cert_file} = $args{cert_file} || 'cert.pem';
-    $self->{key_file} = $args{key_file} || 'key.pem';
-    $self->{logger} = 'OpenLash::Log';  # Use functions directly
-
-    return $self;
-}
-
-sub start {
-    my ($self) = @_;
-
-    OpenLash::Log::OLinfo("Starting SSL web server on port $self->{port}");
-
-    use HTTP::Daemon::SSL;
-    my $d = HTTP::Daemon::SSL->new(
-        LocalPort => $self->{port},
-        SSL_cert_file => $self->{cert_file},
-        SSL_key_file => $self->{key_file},
-    ) or die "Cannot create daemon: $!";
-
-    OpenLash::Log::OLinfo("SSL Server started and listening on port $self->{port}");
-
-    while (my $c = $d->accept) {
-        while (my $r = $c->get_request) {
-            $self->handle_request($c, $r);
-        }
-        $c->close;
-    }
-}
+my  = OpenLash::WebUI->new;
 
 sub handle_request {
-    my ($self, $client) = @_;
-
-    use HTTP::Daemon::SSL;
-    my $d = HTTP::Daemon::SSL->new(
-        LocalPort => $self->{port},
-        SSL_cert_file => $self->{cert_file},
-        SSL_key_file => $self->{key_file},
-    ) or die "Cannot create daemon: $!";
-    
-    while (my $c = $d->accept) {
-        while (my $r = $c->get_request) {
-            $self->handle_request($c, $r);
+    my (, ) = @_;
+    my  = ->url_path;
+    if ( =~ m!^/(css|js)/(.*)) {
+        my  = ;
+        my  = ;
+        my  = File::Spec->catfile('/root/OpenLash/webserver', , );
+        if (-f ) {
+            open my , '<',  or return print HTTP/1.0 500rnrnError;
+            print HTTP/1.0 200 OKrnContent-Type:  . ( eq 'css' ? 'text/css' : 'application/javascript') . rnrn;
+            print <>;
+            close ;
+        } else {
+            print HTTP/1.0 404 Not Foundrnrn;
         }
-        $c->close;
+    } elsif ( =~ m!^/api/(.*)) {
+        my  = ;
+        my  = IO::Socket::INET->new(PeerAddr => 'localhost', PeerPort => 5555, Proto => 'tcp');
+        if () {
+            print  encode_json({query => API: }) . n;
+            my  = <>;
+            print HTTP/1.0 200 OKrnContent-Type: text/plainrnrn . decode_json()->{result};
+            close ;
+        } else {
+            print HTTP/1.0 500rnrnSocket error;
+        }
+    } else {
+        print HTTP/1.0 200 OKrnContent-Type: text/htmlrnrn . ->render('index.tpl', {});
     }
-
-    OpenLash::Log::OLlog('INFO', "Received request: $request from " . $client->peerhost());
-
-    # Basic response (to be expanded with WebUI integration)
-    my $response = HTTP::Response->new(RC_OK);
-    $response->content("Hello from OpenLash WebServer!");
-    print $client $response->as_string();
-
-    $client->close();
 }
 
 1;
-
-__END__
-
-=head1 NAME
-
-WebServer - SSL Web Server for OpenLash
-
-=head1 SYNOPSIS
-
-  use WebServer;
-  my $server = WebServer->new(port => 443, cert_file => 'cert.pem', key_file => 'key.pem');
-  $server->start();
-
-=head1 DESCRIPTION
-
-Starts an SSL web server using IO::Socket::SSL.
-
-=cut
+EOF && git add lib/perl/OpenLash/WebServer.pm
