@@ -1,41 +1,13 @@
 #!/usr/bin/perl
-use strict; use warnings;
-use FindBin '$RealBin';
-use lib "$RealBin/..";
-use lib './';
-use OpenLash::LLM;
-use OpenLash::Comm;
-use OpenLash::Skills;
-use OpenLash::Plugins;
-use OpenLash::Memory;
-use OpenLash::Lessons;
-use OpenLash::Tasks;
-use OpenLash;
+use strict;
+use warnings;
+use IO::Socket::INET;
+use JSON::PP;
 
-my $llm	 = OpenLash::LLM->new();
-my $comm	= OpenLash::Comm->new();
-my $skills  = OpenLash::Skills->new();
-my $plugins = OpenLash::Plugins->new();
-my $memory  = OpenLash::Memory->new();
-my $lessons = OpenLash::Lessons->new();
-my $tasks   = OpenLash::Tasks->new();
-
-$comm->add_channel('cli', 'cli');
-
-my $agent = OpenLash->new(
-    llm => $llm,
-    comm => $comm,
-    skills_obj => $skills,
-    plugins_obj => $plugins,
-    memory => $memory,
-    lessons => $lessons,
-    tasks => $tasks,
-);
-
-print "OpenLash CLI ready (exit zum Beenden)\n";
-while (1) {
-	print "> ";
-	my $input = <STDIN>; chomp $input;
-	last if $input eq "exit";
-	print $agent->ask($input), "\n";
-}
+my  = shift || 'Test query';
+my  = IO::Socket::INET->new(PeerAddr => 'localhost', PeerPort => 5555, Proto => 'tcp') or die Cannot connect: ;
+print  encode_json({query => }) . n;
+my  = <>;
+print decode_json()->{result} . n;
+close ;
+EOF && chmod +x bin/cli.pl && git add bin/cli.pl && perl bin/cli.pl 'Hello agent'
