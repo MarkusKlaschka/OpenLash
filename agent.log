@@ -1,0 +1,2 @@
+syntax error at bin/start_agent.pl line 7, near "my  ="
+Execution of bin/start_agent.pl aborted due to compilation errors.
